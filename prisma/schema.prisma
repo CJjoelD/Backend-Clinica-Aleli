@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Usuario {
+  id        Int      @id @default(autoincrement())
+  nombre    String
+  email     String   @unique
+  password  String
+  tipo      String?
+  cedula    String?  @unique
+
+  rolId     Int
+  rol       Rol      @relation(fields: [rolId], references: [id])
+
+  consultas Consulta[]
+  resultados ResultadoMedico[]
+  paginas   Pagina[]
+
+  createdAt DateTime @default(now())
+}
+
+model Rol {
+  id       Int       @id @default(autoincrement())
+  nombre   String
+
+  usuarios Usuario[]
+}
+
+model Consulta {
+  id          Int      @id @default(autoincrement())
+  fecha       DateTime
+  diagnostico String
+
+  usuarioId   Int
+  usuario     Usuario  @relation(fields: [usuarioId], references: [id])
+
+  resultado   ResultadoMedico?
+}
+
+model ResultadoMedico {
+  id          Int      @id @default(autoincrement())
+  fecha       DateTime
+  descripcion String
+  archivo     String?
+  numeroOrden String?  @unique
+
+  consultaId  Int      @unique
+  consulta    Consulta @relation(fields: [consultaId], references: [id])
+
+  usuarioId   Int
+  usuario     Usuario  @relation(fields: [usuarioId], references: [id])
+}
+
+model Pagina {
+  id        Int     @id @default(autoincrement())
+  titulo    String
+  contenido String
+  estado    Boolean @default(true)
+
+  usuarioId Int
+  usuario   Usuario @relation(fields: [usuarioId], references: [id])
+}
+
+model CMS {
+  id        Int      @id @default(autoincrement())
+  clave     String   @unique
+  valor     String   @db.Text
+  tipo      String?  // Ej: servicio, especialidad, general
+  imagenUrl String?
+  updatedAt DateTime @updatedAt
+}
