@@ -6,10 +6,11 @@ async function main() {
 
   // 1. Obtener el paciente (usuario con ID 1 o crear uno si no existe/usar el admin para prueba)
   // Usaremos el admin que ya existe para esta prueba rápida, o crearemos un paciente si prefieres.
-  const user = await prisma.usuario.findFirst({ where: { email: 'admin@aleli.com' } });
+  const adminEmail = process.env.ADMIN_EMAIL || 'admin@aleli.com';
+  const user = await prisma.usuario.findFirst({ where: { email: adminEmail } });
 
   if (!user) {
-    console.error('No se encontró el usuario admin@aleli.com. Realiza el registro primero.');
+    console.error(`No se encontró el usuario ${adminEmail}. Realiza el registro primero.`);
     return;
   }
 
