@@ -40,6 +40,8 @@ export const register = async (req: Request, res: Response) => {
  * Verifica credenciales, compara hashes y genera un token JWT de acceso.
  */
 export const login = async (req: Request, res: Response) => {
+  console.log('--- INTENTO DE LOGIN ---');
+  console.log('Email:', req.body.email);
   try {
     const { email, password } = req.body;
 
