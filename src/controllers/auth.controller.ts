@@ -45,39 +45,45 @@ export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
 
+    console.log('Buscando usuario en la BD...');
     // Buscar usuario
-    const user = await prisma.usuario.findUnique({ 
+    const usuario = await prisma.usuario.findUnique({ 
       where: { email },
       include: { rol: true }
     });
 
-    if (!user) {
+    if (!usuario) {
+      console.log('Usuario no encontrado:', email);
       return res.status(401).json({ message: 'Credenciales inválidas' });
     }
 
+    console.log('Usuario encontrado, verificando contraseña...');
     // Comparar contraseña
-    const isValid = await authService.comparePassword(password, user.password);
-    if (!isValid) {
+    const isPasswordValid = await authService.comparePassword(password, usuario.password);
+    if (!isPasswordValid) {
+      console.log('Contraseña incorrecta para:', email);
       return res.status(401).json({ message: 'Credenciales inválidas' });
     }
 
+    console.log('Contraseña correcta, generando token...');
     // Generar token
     const token = authService.generateToken({ 
-      id: user.id, 
-      email: user.email, 
-      rol: user.rol.nombre 
+      id: usuario.id, 
+      email: usuario.email, 
+      rol: usuario.rol.nombre 
     });
 
     res.json({
       token,
       user: {
-        id: user.id,
-        nombre: user.nombre,
-        email: user.email,
-        rol: user.rol.nombre
+        id: usuario.id,
+        nombre: usuario.nombre,
+        email: usuario.email,
+        rol: usuario.rol.nombre
       }
     });
   } catch (error: any) {
+    console.error('❌ ERROR EN LOGIN:', error);
     res.status(500).json({ error: error.message });
   }
 };
