@@ -8,7 +8,13 @@ import { errorHandler } from './middlewares/errorHandler';
 
 const app = express();
 
-app.use(cors());
+// CONFIGURACIÓN DE CORS MEJORADA
+app.use(cors({
+  origin: '*', // Permite que Vercel se conecte sin problemas
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 app.use(express.json());
 
 // Routes
